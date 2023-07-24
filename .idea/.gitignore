@@ -7,6 +7,7 @@ src/BusinessClassTicket.java
 src/EcononyClassTycket.java
 src/FirstClassTicket.java
 src/Thinking.java
+src/Ticket.java
 
 # Compiled class file
 *.class
