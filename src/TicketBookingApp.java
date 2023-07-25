@@ -236,7 +236,7 @@ public class TicketBookingApp {
         System.out.println();
 
 
-        // выводим 1 рейс на экран со всей инфой из Set<Routs> sortedDepartureRout = new HashSet<>()
+        //show all routs that match users choice
 
         if (!sortedDepartureRout.isEmpty()) {
             for (Routs rout : sortedDepartureRout) {
