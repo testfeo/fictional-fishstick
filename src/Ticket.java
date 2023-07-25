@@ -10,14 +10,6 @@ public class Ticket {
         this.user = user;
         this.firstClass = firstClass;
     }
-
-
-
-
-
-
-
-
     // private Flights flight;
     // baggage
     //  User user; name, document
