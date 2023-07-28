@@ -221,9 +221,9 @@ public class TicketBookingApp {
         ////FLIGHT RESULTS
 
         //routes that match the given parameters
-        Set<Routs> sortedDepartureRout = new HashSet<>();
+        Set<Routs> sortedRouts;
 
-        sortedDepartureRout = routs.stream().filter(element -> element.getDeparture().equals(targetDeparture)
+        sortedRouts = routs.stream().filter(element -> element.getDeparture().equals(targetDeparture)
                         && element.getDestination().equals(targetDestination) && element.getFlight_days() == targetFlightDays)
                 .collect(Collectors.toSet());
 
@@ -238,14 +238,35 @@ public class TicketBookingApp {
 
         //show all routs that match users choice
 
-        if (!sortedDepartureRout.isEmpty()) {
-            for (Routs rout : sortedDepartureRout) {
-                System.out.println(rout.showAllRoutInfo());
+        if (!sortedRouts.isEmpty()) {
+            int counter = 1;
+            for (Routs rout : sortedRouts) {
+                System.out.println(counter + ". " + rout.showAllRoutInfo());
                 System.out.println();
+                counter++;
             }
         }
-    }
-}
+
+        //enter the user's choice of FLIGHT
+        int selectedFlight = scan.nextInt();
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } //end main
+} //end class
 
 
 
