@@ -149,7 +149,7 @@ public class TicketBookingApp {
         System.out.println();
 
         //sorted array, with available destinations from chosen departure
-        List<String> sortedDestinationRout = new ArrayList<>();
+        List<String> sortedDestinationRout;
         //Set<String> sortedDestinationRout = new HashSet<>();
 
         //fill array and remove repeat
@@ -221,11 +221,11 @@ public class TicketBookingApp {
         ////FLIGHT RESULTS
 
         //routes that match the given parameters
-        Set<Routs> sortedRouts;
+        List<Routs> sortedRouts = new ArrayList<>();
 
         sortedRouts = routs.stream().filter(element -> element.getDeparture().equals(targetDeparture)
                         && element.getDestination().equals(targetDestination) && element.getFlight_days() == targetFlightDays)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
 
         System.out.println(
@@ -237,7 +237,6 @@ public class TicketBookingApp {
 
 
         //show all routs that match users choice
-
         if (!sortedRouts.isEmpty()) {
             int counter = 1;
             for (Routs rout : sortedRouts) {
@@ -248,8 +247,8 @@ public class TicketBookingApp {
         }
 
         //enter the user's choice of FLIGHT
-        int selectedFlight = scan.nextInt();
-        
+        int flightChoice = scan.nextInt();
+        Routs selectedFlight = sortedRouts.get(flightChoice - 1);
 
 
 
