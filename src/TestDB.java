@@ -54,8 +54,6 @@ public class TestDB {
             e.printStackTrace();
         }
     }
-
-
     public static void loadRouteFromDatabase() {
 
         HashMap<String, Route> routsNumber = new HashMap<>();
@@ -149,12 +147,11 @@ public class TestDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return cities;
     }
 
 
-    public static List<String> getDestinationByDeparture(String targetDeparture) {
+    public static List<String> findDestinationByDeparture(String targetDeparture) {
         List<String> destinations = new ArrayList<>();
 
         try {
@@ -171,16 +168,12 @@ public class TestDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return destinations;
-
-
     }
 
 
     public static List<Route> findRoutes(String targetDeparture, String targetDestination, int targetFlightDays) {
         List<Route> result = new ArrayList<>();
-
         try {
             Connection connection = getConnection();
             String query = "SELECT * FROM test.routes " +
@@ -192,17 +185,19 @@ public class TestDB {
             preparedStatement.setString(2, targetDestination);
             preparedStatement.setInt(3, targetFlightDays);
 
-
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 Route route = new Route();
-                route.setDeparture(resultSet.getString("departure"));
                 route.setAirline(resultSet.getString("airline"));
+                route.setDeparture(resultSet.getString("departure"));
+                route.setDestination(resultSet.getString("destination"));
+                route.setFlight_days(resultSet.getInt("flight_days"));
                 route.setDeparture_times(resultSet.getString("departure_times"));
                 route.setArrivalTime(resultSet.getString("arrivalTime"));
                 route.setPrice(resultSet.getInt("price"));
-                route.setDestination(resultSet.getString("destination"));
+                route.setRoutes_number(resultSet.getString("routes_number"));
+
                 result.add(route);
             }
         } catch (SQLException e) {
@@ -210,6 +205,25 @@ public class TestDB {
         }
         return result;
     }
+
+
+    public static void uploadUserToDatabase(User user) {
+        try (Connection connection = getConnection()) {
+            String insertQuery = "INSERT INTO users (travelDocumentID, name) VALUES (?, ?)";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+                preparedStatement.setString(1, user.getTravelDocumentID());
+                preparedStatement.setString(2, user.getName());
+
+                preparedStatement.executeUpdate();
+            }
+            System.out.println("work is done!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 

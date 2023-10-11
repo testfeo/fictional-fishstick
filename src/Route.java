@@ -99,7 +99,7 @@ public class Route {
 
     public String showAllRoutInfo() {
         return airline + ": " + departure + "[" + departure_times + "]  ->  " + destination +
-                "[" + arrivalTime + "]\n PRICE:" + price + " EURO";
+                "[" + arrivalTime + "]\n PRICE from:" + price + " EURO";
     }
 
 
@@ -112,8 +112,8 @@ public class Route {
                 ", flight_days=" + flight_days +
                 ", departure_times='" + departure_times + '\'' +
                 ", arrivalTime='" + arrivalTime + '\'' +
+                ", price=" + price +
+                ", routes_number='" + routes_number + '\'' +
                 '}';
     }
-
-
 }
