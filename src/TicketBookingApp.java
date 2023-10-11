@@ -1,10 +1,10 @@
-import java.time.LocalDate;
+import java.io.*;
 import java.time.YearMonth;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TicketBookingApp {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
 
        /* for (;;) {
             System.out.println("");
@@ -27,40 +27,6 @@ public class TicketBookingApp {
 
 ////////////////////////////////// Search For A flight //////////////////////////////////////////
 
-        //create all Routs
-        Routs CI106 = new Routs("WizzAir", "Chisinau", "Iasi", 1, "06:00", "06:40", 25);
-
-        // chisinue - rome
-        Routs CR212 = new Routs("AirItaly", "Chisinau", "Rome", 2, "12:30", "15:00", 150);
-        Routs CR216 = new Routs("WizzAir", "Chisinau", "Rome", 2, "16:00", "18:30", 37);
-        Routs CR109 = new Routs("Flyone", "Chisinau", "Rome", 1, "09:00", "11:30", 95);
-        Routs CR120 = new Routs("WizzAir", "Chisinau", "Rome", 1, "20:00", "22:30", 45);
-
-        //berlin - london
-        Routs BL118 = new Routs("BritishAirways", "Berlin", "London", 1, "18:50", "21:10", 230);
-        Routs BL107 = new Routs("lufthansa", "Berlin", "London", 1, "07:00", "8:50", 240);
-        Routs BL221 = new Routs("lufthansa", "Berlin", "London", 2, "21:45", "23:50", 250);
-
-        //amsterdam - new york
-        Routs AN212 = new Routs("United Airlines", "Amsterdam", "New York", 2, "12:30", "20:40", 1260);
-        Routs AN201 = new Routs("Delta Airlines", "Amsterdam", "New York", 2, "01:00", "09:30", 990);
-        Routs AN109 = new Routs("KLM Dutch", "Amsterdam", "New York", 1, "09:00", "17:30", 1000);
-        Routs AN106 = new Routs("SWISS", "Amsterdam", "New York", 1, "06:00", "14:30", 890);
-
-        //HashSet DB with Routs
-        Set<Routs> routs = new HashSet<>();
-        routs.add(CR120);
-        routs.add(BL107);
-        routs.add(CI106);
-        routs.add(CR109);
-        routs.add(BL118);
-        routs.add(CR212);
-        routs.add(CR216);
-        routs.add(AN212);
-        routs.add(AN109);
-        routs.add(AN201);
-        routs.add(AN106);
-
         Scanner scan = new Scanner(System.in);
 
         //create variables in which we will store the user's choice
@@ -68,18 +34,8 @@ public class TicketBookingApp {
         String targetDestination;
         int targetFlightDays;
 
-        //HashMap for selection WHERE TRAVELLING FROM
-        HashMap<Integer, String> departureCity = new HashMap<>();
-        departureCity.put(1, "Rome");
-        departureCity.put(2, "Vienna");
-        departureCity.put(3, "Amsterdam");
-        departureCity.put(4, "Bucharest");
-        departureCity.put(5, "Chisinau");
-        departureCity.put(6, "Prague");
-        departureCity.put(7, "Iasi");
-        departureCity.put(8, "London");
-        departureCity.put(9, "Berlin");
-        departureCity.put(10, "New York");
+        // List for selection WHERE TRAVELLING FROM
+        List<String> departureCityList = TestDB.loadDepartureFromDatabase();
 
 
         System.out.println(
@@ -87,169 +43,80 @@ public class TicketBookingApp {
         System.out.println();
 
 
-        // FROM
-        System.out.println("WHERE ARE YOU TRAVELLING FROM? \n " +
-                "-inter a number of departureCity-");
-        System.out.println();
-        System.out.println(
-                "1.Rome           6.Prague\n" +
-                        "2.Vienna         7.Iasi\n" +
-                        "3.Amsterdam      8.London\n" +
-                        "4.Bucharest      9.Berlin\n" +
-                        "5.Chisinau      10.New York");
-        System.out.println();
+        //show the user options for where to fly from
+        ConsoleUI.showDepartureCity(departureCityList);
 
-
-        // 1. with switch/case ///////////////////
-        /*switch (departureChoice) {
-            case 1:
-                targetDeparture = "Rome";
-                break;
-            case 2:
-                targetDeparture = "Vienna";
-                break;
-            case 3:
-                targetDeparture = "Amsterdam";
-                break;
-            case 4:
-                targetDeparture = "Bucharest";
-                break;
-            case 5:
-                targetDeparture = "Chisinau";
-                break;
-            case 6:
-                targetDeparture = "Prague";
-                break;
-            case 7:
-                targetDeparture = "Iasi";
-                break;
-            case 8:
-                targetDeparture = "London";
-                break;
-            case 9:
-                targetDeparture = "Berlin";
-                break;
-            case 10:
-                targetDeparture = "New York";
-                break;
-            default:
-                targetDeparture = "Error";
-                break;
-        }*/
-        int departureChoice = scan.nextInt();
-        //enter the user's choice
-        targetDeparture = departureCity.get(departureChoice);
+        //enter the user's choice into targetDeparture
+        int departureUserChoice = Validation.intInputValidation(departureCityList.size());
+        targetDeparture = departureCityList.get(departureUserChoice - 1);
         System.out.println("From: " + targetDeparture);
         System.out.println();
 
 
-        //TO
-        System.out.println("WHERE DO YOU WANT TO GO? \n " +
-                "-inter a number of destinationCity-");
-        System.out.println();
-
         //sorted array, with available destinations from chosen departure
-        List<String> sortedDestinationRout = new ArrayList<>();
-        //Set<String> sortedDestinationRout = new HashSet<>();
-
-        //fill array and remove repeat
-        sortedDestinationRout = routs.stream()
-                .filter(rout -> rout.getDeparture().equals(targetDeparture))
-                .map(Routs::getDestination)
-                .distinct().collect(Collectors.toList());
-
+        List<String> destinationList = TestDB.findDestinationByDeparture(targetDeparture);
 
         //show directions to the user
-        for (int i = 0; i < sortedDestinationRout.size(); i++) {
-            System.out.println(i + 1 + "." + sortedDestinationRout.get(i));
-        }
+        ConsoleUI.showDestinationCity(destinationList);
 
         //enter the user's choice
-        int destinationChoice = scan.nextInt();
-
-        targetDestination = sortedDestinationRout.get(destinationChoice - 1);
+        int destinationChoice = Validation.intInputValidation(destinationList.size());
+        targetDestination = destinationList.get(destinationChoice - 1);
         System.out.println("To: " + targetDestination);
         System.out.println();
-
 
         //SELECT DATE
         System.out.println("SELECT DATE: \n " +
                 "-enter month [1-12]-");
 
-        //Get month number from user (1-12)
-        int monthNumber = scan.nextInt();
-
-        // create calendar
+        //Get month number from user
+        int monthNumber = Validation.intInputValidation(12);
         YearMonth yearMonth = YearMonth.of(2023, monthNumber);
 
-        System.out.println(yearMonth.getMonth().toString() + " 2023");
-        System.out.println("Mon Tue Wed Thu Fri Sat Sun");
-
-        LocalDate firstDay = yearMonth.atDay(1);
-        int offset = firstDay.getDayOfWeek().getValue() % 7;
-
-        for (int i = 0; i < offset; i++) {
-            System.out.print("    ");
-        }
-
-        for (int i = 1; i <= yearMonth.lengthOfMonth(); i++) {
-            LocalDate currentDate = yearMonth.atDay(i);
-            String day = String.format("%2d", i);
-
-            //format
-            if (currentDate.equals(LocalDate.now())) {
-                System.out.print("\033[1m" + day + "\033[0m");
-            } else {
-                System.out.print(day);
-            }
-            System.out.print(" ");
-
-            if (currentDate.getDayOfWeek().getValue() == 7) {
-                System.out.println();
-            }
-        }
-        System.out.println();
-        System.out.println("ENTER NUMBER OF DAY");
+        //show calendar for user
+        ConsoleUI.showCalendar(yearMonth);
 
         //targetFlightDays
-        int dayOfWeek = scan.nextInt();
-        if (dayOfWeek % 2 == 0) {
-            targetFlightDays = 2;
-        } else targetFlightDays = 1;
+        int dayOfWeek = Validation.intInputValidation(31);
+        targetFlightDays = Validation.sortFlightDays(dayOfWeek);
 
-
-        ////FLIGHT RESULTS
-
-        //routes that match the given parameters
-        Set<Routs> sortedDepartureRout = new HashSet<>();
-
-        sortedDepartureRout = routs.stream().filter(element -> element.getDeparture().equals(targetDeparture)
-                        && element.getDestination().equals(targetDestination) && element.getFlight_days() == targetFlightDays)
-                .collect(Collectors.toSet());
-
+        //routes that match the given parameters: from - to/ when
+        List<Route> sortedRoutes = TestDB.findRoutes(targetDeparture, targetDestination, targetFlightDays);
 
         System.out.println(
                 "-----------------------------  FLIGHT RESULTS -----------------------------");
-        //System.out.println();
         System.out.println("Flights From: " + targetDeparture + " to " + targetDestination);
-        System.out.println(yearMonth.getMonth().toString() + " " + dayOfWeek + " 2023");
-        System.out.println();
+        //show all routs that match user choice
+        ConsoleUI.showRequestedRoutes(sortedRoutes, monthNumber, dayOfWeek);
+
+        //enter the user's choice of FLIGHT
+        int flightChoice = Validation.intInputValidation(sortedRoutes.size());
+        Route selectedFlight = sortedRoutes.get(flightChoice - 1);
+
+        //show seats classes and get it
+        ConsoleUI.showSeatClass(targetDestination, selectedFlight);
+        SeatClass seatClass = Seat.getSeatClass();
+
+        //add random seat number
+        Seat seatNumber = new Seat(Seat.generateRandomSeat(seatClass));
+
+        // ask user about Baggage
+        int baggage = Baggage.getBaggage(seatClass);
+
+        //get user Information
+        User user =  User.getUserInformation();
+
+        //create ticket with all information
+        Ticket ticket = new Ticket(selectedFlight.getDeparture(),selectedFlight.getDestination(),
+                                    yearMonth.getMonth(),dayOfWeek, selectedFlight.getDeparture_times(),
+                                    selectedFlight.getArrivalTime(), selectedFlight.getAirline(),
+                                    selectedFlight.getPrice(), user, seatNumber, baggage);
+
+        //print ticket with all information
+        ticket.printTicket();
 
 
-        // выводим 1 рейс на экран со всей инфой из Set<Routs> sortedDepartureRout = new HashSet<>()
 
-        if (!sortedDepartureRout.isEmpty()) {
-            for (Routs rout : sortedDepartureRout) {
-                System.out.println(rout.showAllRoutInfo());
-                System.out.println();
-            }
-        }
+
     }
 }
-
-
-
-
-
-
-
